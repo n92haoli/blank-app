@@ -5,57 +5,59 @@ from datetime import date
 # ページの設定
 st.set_page_config(page_title="バースデー占い", page_icon="🔮")
 
-# タイトルと説明
 st.title("🔮 今日のバースデー占い")
-st.write("生年月日を入力して、今日の運勢を占ってみましょう！")
 
-# 入力フォーム
-with st.sidebar:
-    st.header("あなたの情報")
-    birthday = st.date_input("生年月日を選択してください", value=date(2000, 1, 1))
-    submit_btn = st.button("占う！")
+# メイン画面に入力項目を配置
+st.subheader("あなたの生年月日を教えてください")
 
-# 占いデータの定義
-fortunes = ["絶好調！何事もうまくいく日です。", "安定した運気。自分磨きに最適です。", 
-            "少し注意が必要な日。慎重に行動しましょう。", "新しい発見がある予感！", 
-            "周りの人に感謝すると運気が上がります。"]
-love_fortunes = ["積極的なアプローチが吉。", "聞き手に回ると好感度アップ。", 
-                 "自分を信じて真っ直ぐに進んで。", "新しい出会いのチャンスがあるかも。"]
+# 3つのカラムに分けて、年・月・日を数字で入力
+col_y, col_m, col_d = st.columns(3)
+
+with col_y:
+    year = st.number_input("年", min_value=1900, max_value=2026, value=2000)
+with col_m:
+    month = st.number_input("月", min_value=1, max_value=12, value=1)
+with col_d:
+    day = st.number_input("日", min_value=1, max_value=31, value=1)
+
+# ボタンを中央付近に配置
+submit_btn = st.button("✨ 今日の運勢を占う ✨", use_container_width=True)
+
+# 占いデータ
+fortunes = ["絶好調！", "安定しています", "慎重に！", "新しい発見あり", "感謝を忘れずに"]
+love_fortunes = ["積極性が吉", "聞き上手になって", "自分を信じて", "出会いの予感"]
 colors = ["レッド", "ブルー", "イエロー", "グリーン", "ピンク", "ゴールド", "パープル", "オレンジ"]
 
-# 占いのロジック
 if submit_btn:
-    # 今日の日付と誕生日を組み合わせて乱数のシードを固定
-    # これにより、同じ誕生日の人はその日一日中、同じ結果が表示されます
-    seed_value = int(birthday.strftime('%Y%m%d')) + int(date.today().strftime('%Y%m%d'))
-    random.seed(seed_value)
-
-    # ランダムに結果を選択
-    today_fortune = random.choice(fortunes)
-    today_love = random.choice(love_fortunes)
-    lucky_color = random.choice(colors)
-    luck_score = random.randint(1, 5)
-
-    # 結果の表示
-    st.divider()
-    st.header(f"✨ {date.today().strftime('%Y/%m/%d')} の運勢")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("総合運")
-        st.write("⭐" * luck_score)
-        st.info(today_fortune)
+    try:
+        # 入力された数値が正しい日付かチェック（例：2月31日などはエラーにする）
+        input_birthday = date(year, month, day)
         
-    with col2:
-        st.subheader("恋愛運")
-        st.write(today_love)
+        # 乱数のシード設定
+        seed_value = int(input_birthday.strftime('%Y%m%d')) + int(date.today().strftime('%Y%m%d'))
+        random.seed(seed_value)
 
-    st.subheader("ラッキーカラー")
-    st.markdown(f"🎨 今日のあなたの色は **{lucky_color}** です！")
+        # 結果を生成
+        today_fortune = random.choice(fortunes)
+        today_love = random.choice(love_fortunes)
+        lucky_color = random.choice(colors)
+        luck_score = random.randint(1, 5)
 
-    # お祝い演出
-    if luck_score == 5:
-        st.balloons()
-else:
-    st.info("左のサイドバーから生年月日を入力して「占う！」ボタンを押してください。")
+        # 表示
+        st.divider()
+        st.success(f"結果が出ました！ （占った日: {date.today().strftime('%Y/%m/%d')}）")
+        
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric(label="運勢スコア", value=f"{luck_score} / 5")
+            st.info(f"**総合運:** {today_fortune}")
+        with c2:
+            st.write("**恋愛運**")
+            st.write(today_love)
+            st.write(f"**ラッキーカラー:** {lucky_color}")
+
+        if luck_score == 5:
+            st.balloons()
+
+    except ValueError:
+        st.error("正しい日付を入力してください（例：存在しない日などは占えません）")
