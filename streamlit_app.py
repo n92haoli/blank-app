@@ -43,6 +43,14 @@ if submit_btn:
         lucky_color = random.choice(colors)
         luck_score = random.randint(1, 5)
 
+        # --- Supabase への保存処理 (改良ポイント) ---
+        new_data = {
+            "birthday": input_birthday.isoformat(),
+            "fortune": today_fortune,
+            "luck_score": luck_score
+        }
+        conn.table("fortune_history").insert(new_data).execute()
+
         # 表示
         st.divider()
         st.success(f"結果が出ました！ （占った日: {date.today().strftime('%Y/%m/%d')}）")
@@ -61,3 +69,17 @@ if submit_btn:
 
     except ValueError:
         st.error("正しい日付を入力してください（例：存在しない日などは占えません）")
+# --- 履歴の表示部分 (追加機能) ---
+st.divider()
+st.subheader("📜 最近の占い履歴")
+
+# Supabase からデータを取得 (最新の10件)
+try:
+    res = conn.table("fortune_history").select("*").order("created_at", desc=True).limit(10).execute()
+    if res.data:
+        # 取得したデータを表形式で表示
+        st.table(res.data)
+    else:
+        st.write("履歴はまだありません。")
+except Exception as e:
+    st.error("履歴の読み込みに失敗しました。RLSの設定やテーブル名を確認してください。")
