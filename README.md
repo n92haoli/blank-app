@@ -1,19 +1,25 @@
-# 🎈 Blank app template
+# 🔮 バースデー占い Pro (Supabase保存版)
 
-A simple Streamlit app template for you to modify!
+あなたの生年月日から、今日の運勢やラッキーカラーを占うことができるWebアプリです。
+以前のバージョンから改良を加え、占いの履歴がデータベース（Supabase）に永続的に保存されるようになりました。
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+## 🚀 アプリを試す
+以下のリンクから実際にアプリを試用できます。
+**[アプリのURLをここに貼り付けてください（例：https://xxx.streamlit.app/）]**
 
-### How to run it on your own machine
+## ✨ 主な機能
+- **今日の占い**: 生年月日を入力すると、独自のアルゴリズム（生年月日＋今日の日付）で運勢スコア、総合運、恋愛運、ラッキーカラーを算出します。
+- **ラッキー演出**: 運勢スコアが最高（5/5）の場合、お祝いの風船が飛び出す演出があります。
+- **履歴保存機能 (Supabase連携)**: 占った結果は自動的に Supabase データベースに保存されます。
+- **履歴表示**: 画面下部に最新10件の占い履歴が表示され、他のユーザーがどのような運勢だったかを確認できます。
 
-1. Install the requirements
+## 🛠️ 使用技術
+- **Frontend**: Streamlit
+- **Backend/Database**: Supabase (PostgreSQL)
+- **Language**: Python
+- **Libraries**: `st-supabase-connection`, `random`, `datetime`
 
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+## 📖 開発のポイントと苦労した点
+- **データの永続化**: 以前の `st.session_state` ではアプリを閉じるとデータが消えてしまいましたが、Supabase を導入することで、休止状態になってもデータが消えないように改良しました。
+- **RLSの設定**: データベースのセキュリティ（RLS）設定や、SQL Editor を使ったテーブルのスペル修正（`is_conpleted` から `is_completed` への変更）など、バックエンド側の設定に苦労しましたが、AIのアドバイスを参考に解決しました。
+- **秘密情報の管理**: Supabase の URL や API キーを GitHub に公開せず、Streamlit Cloud の Secrets 機能を活用して安全に管理する方法を学びました。
