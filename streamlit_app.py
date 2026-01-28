@@ -1,9 +1,14 @@
 import streamlit as st
 import random
 from datetime import date
+from st_supabase_connection import SupabaseConnection
 
 # ページの設定
 st.set_page_config(page_title="バースデー占い", page_icon="🔮")
+
+# --- Supabase 接続の初期化 ---
+# .streamlit/secrets.toml の情報を自動で読み込みます
+conn = st.connection("supabase", type=SupabaseConnection)
 
 st.title("🔮 今日のバースデー占い")
 
